@@ -4,13 +4,13 @@ A very simple command line based file integrity checker for the
 paranoid. `fimbl` just checks that files have not changed since it
 last saw them.
 
-Add files to the database (__manually_) with:
+Add files to the database (_manually_) with:
 
 ```shell
 fimbl add ~/.zshrc ~/.profile
 ```
 
-...and have them checked (somewhere in _automation_ / cron job etc.)
+...and have them checked (somewhere in _automation_)
 with `fimbl verify` e.g.
 
 ```shell
