@@ -1,0 +1,18 @@
+[package]
+author = "Greg Hawkins"
+name = "fimbl"
+description = "Simple file integrity checker for the paranoid."
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+clap = { version = "4.3.0", features = ["derive"]}
+dirs = "5.0.1"
+rmp-serde = "1.1.1"
+serde = "1.0.163"
+serde_derive = "1.0.163"
+sha3 = "0.10.8"
+sled = "0.34.7"
+thiserror = "1.0.40"
