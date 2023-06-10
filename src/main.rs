@@ -47,7 +47,7 @@ struct CliArgs {
 
 impl CliArgs {
     fn database(&self) -> Option<&Path> {
-	self.database.as_deref()
+        self.database.as_deref()
     }
 }
 
@@ -72,14 +72,14 @@ fn symlink_reference_chain(path: &Path) -> Result<Vec<PathBuf>, FimblError> {
     let mut chain = vec![];
     let mut target: PathBuf = path.clone().to_owned();
     loop {
-	chain.push(target.clone());
-	let symlink = target.is_symlink();
+        chain.push(target.clone());
+        let symlink = target.is_symlink();
 
-	if symlink {
-	    target = read_link(target)?;
-	} else {
-	    break;
-	}
+        if symlink {
+            target = read_link(target)?;
+        } else {
+            break;
+        }
     }
 
     Ok(chain)
@@ -91,13 +91,13 @@ fn preprocess_file_list(files: &Vec<PathBuf>) -> Result<(Vec<PathBuf>, Vec<PathB
     let mut directories = vec![];
 
     for file in files {
-	let mut chain = symlink_reference_chain(file)?;
-	let target = chain.last().unwrap();
-	if Path::is_dir(&target) {
-	    directories.append(&mut chain);
-	} else {
-	    files_and_symlinks.append(&mut chain);
-	}
+        let mut chain = symlink_reference_chain(file)?;
+        let target = chain.last().unwrap();
+        if Path::is_dir(&target) {
+            directories.append(&mut chain);
+        } else {
+            files_and_symlinks.append(&mut chain);
+        }
     }
     Ok((files_and_symlinks, directories))
 }
@@ -105,8 +105,8 @@ fn preprocess_file_list(files: &Vec<PathBuf>) -> Result<(Vec<PathBuf>, Vec<PathB
 /// If dirs is non-empty, return an error
 fn reject_directories(dirs: &Vec<PathBuf>) -> Vec<ReportItem> {
     dirs.iter()
-	.map(|d| ReportItem::FileIsDirectory { path: d.clone() })
-	.collect()
+        .map(|d| ReportItem::FileIsDirectory { path: d.clone() })
+        .collect()
 }
 
 /// Fingerprint files and add to database
@@ -119,18 +119,18 @@ fn add(
     let mut reports = reject_directories(&dirs);
 
     for file in files {
-	let file = canonicalize(&file)?;
+        let file = canonicalize(&file)?;
 
-	match Fingerprint::from_file(&file) {
-	    Ok(fingerprint) => {
-		let mut file_reports =
-		    database.store_new_file(&file, &fingerprint, tolerate_existing)?;
-		reports.append(&mut file_reports);
-	    }
-	    Err(e) => {
-		panic!("Cannot add {}: {}", file.to_string_lossy(), e);
-	    }
-	}
+        match Fingerprint::from_file(&file) {
+            Ok(fingerprint) => {
+                let mut file_reports =
+                    database.store_new_file(&file, &fingerprint, tolerate_existing)?;
+                reports.append(&mut file_reports);
+            }
+            Err(e) => {
+                panic!("Cannot add {}: {}", file.to_string_lossy(), e);
+            }
+        }
     }
 
     Ok(reports)
@@ -139,12 +139,12 @@ fn add(
 /// List all the files currently in the database to stdout
 fn list(database: &SystemDatabase, verbose: bool) -> Result<Vec<ReportItem>, FimblError> {
     if verbose {
-	println!("Fimbl DB is at {}", database.path().display());
-	println!("Files tracked:\n");
+        println!("Fimbl DB is at {}", database.path().display());
+        println!("Files tracked:\n");
     }
 
     for (path, fingerprint) in database.list_fingerprint_assertions()? {
-	println!("{}", path.display());
+        println!("{}", path.display());
     }
 
     Ok(vec![])
@@ -160,10 +160,10 @@ fn remove(
     let mut reports = reject_directories(&dirs);
 
     for file in files {
-	let file = canonicalize(&file)?;
+        let file = canonicalize(&file)?;
 
-	let mut file_reports = database.remove_existing_file(&file, tolerate_untracked)?;
-	reports.append(&mut file_reports);
+        let mut file_reports = database.remove_existing_file(&file, tolerate_untracked)?;
+        reports.append(&mut file_reports);
     }
 
     Ok(reports)
@@ -178,17 +178,17 @@ fn verify(
     let mut reports = reject_directories(&dirs);
 
     for file in files {
-	let file = canonicalize(&file)?;
+        let file = canonicalize(&file)?;
 
-	match Fingerprint::from_file(&file) {
-	    Ok(fingerprint) => {
-		let mut file_reports = database.verify(&file, &fingerprint)?;
-		reports.append(&mut file_reports);
-	    }
-	    Err(e) => {
-		panic!("Cannot verify {}: {}", file.to_string_lossy(), e);
-	    }
-	}
+        match Fingerprint::from_file(&file) {
+            Ok(fingerprint) => {
+                let mut file_reports = database.verify(&file, &fingerprint)?;
+                reports.append(&mut file_reports);
+            }
+            Err(e) => {
+                panic!("Cannot verify {}: {}", file.to_string_lossy(), e);
+            }
+        }
     }
 
     Ok(reports)
@@ -199,15 +199,15 @@ fn verify_all(database: &mut SystemDatabase) -> Result<Vec<ReportItem>, FimblErr
     let mut reports = vec![];
 
     for (file, _) in database.list_fingerprint_assertions()? {
-	match Fingerprint::from_file(&file) {
-	    Ok(fingerprint) => {
-		let mut file_reports = database.verify(&file, &fingerprint)?;
-		reports.append(&mut file_reports);
-	    }
-	    Err(e) => {
-		panic!("Cannot verify {}: {}", file.to_string_lossy(), e);
-	    }
-	}
+        match Fingerprint::from_file(&file) {
+            Ok(fingerprint) => {
+                let mut file_reports = database.verify(&file, &fingerprint)?;
+                reports.append(&mut file_reports);
+            }
+            Err(e) => {
+                panic!("Cannot verify {}: {}", file.to_string_lossy(), e);
+            }
+        }
     }
 
     Ok(reports)
@@ -223,17 +223,17 @@ fn accept(
     let mut reports = reject_directories(&dirs);
 
     for file in files {
-	let file = canonicalize(&file)?;
-	match Fingerprint::from_file(&file) {
-	    Ok(fingerprint) => {
-		let mut file_reports =
-		    database.update_existing_file(&file, &fingerprint, tolerate_untracked)?;
-		reports.append(&mut file_reports);
-	    }
-	    Err(e) => {
-		panic!("Cannot add {}: {}", file.to_string_lossy(), e);
-	    }
-	}
+        let file = canonicalize(&file)?;
+        match Fingerprint::from_file(&file) {
+            Ok(fingerprint) => {
+                let mut file_reports =
+                    database.update_existing_file(&file, &fingerprint, tolerate_untracked)?;
+                reports.append(&mut file_reports);
+            }
+            Err(e) => {
+                panic!("Cannot add {}: {}", file.to_string_lossy(), e);
+            }
+        }
     }
 
     Ok(reports)
@@ -241,7 +241,7 @@ fn accept(
 
 fn report(report_items: Vec<ReportItem>) {
     for item in report_items {
-	println!("- {item}")
+        println!("- {item}")
     }
 }
 
@@ -249,9 +249,9 @@ fn main() {
     let cli = CliArgs::parse();
 
     let default_db = if let Some(path) = dirs::home_dir() {
-	path.join(".config/fimbl/db")
+        path.join(".config/fimbl/db")
     } else {
-	panic!("No HOME directory")
+        panic!("No HOME directory")
     };
 
     let db_path = cli.database().unwrap_or(&*default_db);
@@ -259,12 +259,12 @@ fn main() {
     let mut database = SystemDatabase::open(db_path).unwrap();
 
     let reports = match &cli.command {
-	Command::Add { files } => add(files, &mut database, cli.tolerant),
-	Command::Remove { files } => remove(files, &mut database, cli.tolerant),
-	Command::List {} => list(&database, cli.verbose),
-	Command::Verify { files } => verify(files, &mut database),
-	Command::VerifyAll {} => verify_all(&mut database),
-	Command::Accept { files } => accept(files, &mut database, cli.tolerant),
+        Command::Add { files } => add(files, &mut database, cli.tolerant),
+        Command::Remove { files } => remove(files, &mut database, cli.tolerant),
+        Command::List {} => list(&database, cli.verbose),
+        Command::Verify { files } => verify(files, &mut database),
+        Command::VerifyAll {} => verify_all(&mut database),
+        Command::Accept { files } => accept(files, &mut database, cli.tolerant),
     };
 
     report(reports.unwrap());
