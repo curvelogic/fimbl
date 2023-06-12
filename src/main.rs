@@ -10,7 +10,6 @@ extern crate serde_derive;
 
 use clap::{Parser, Subcommand};
 use database::SystemDatabase;
-use dirs;
 use error::FimblError;
 use fingerprint::Fingerprint;
 use report::ReportItem;
@@ -70,7 +69,7 @@ enum Command {
 /// Expand a symlink into chain of links and ultimate target
 fn symlink_reference_chain(path: &Path) -> Result<Vec<PathBuf>, FimblError> {
     let mut chain = vec![];
-    let mut target: PathBuf = path.clone().to_owned();
+    let mut target: PathBuf = path.to_owned();
     loop {
         chain.push(target.clone());
         let symlink = target.is_symlink();
@@ -93,7 +92,7 @@ fn preprocess_file_list(files: &Vec<PathBuf>) -> Result<(Vec<PathBuf>, Vec<PathB
     for file in files {
         let mut chain = symlink_reference_chain(file)?;
         let target = chain.last().unwrap();
-        if Path::is_dir(&target) {
+        if Path::is_dir(target) {
             directories.append(&mut chain);
         } else {
             files_and_symlinks.append(&mut chain);
@@ -103,7 +102,7 @@ fn preprocess_file_list(files: &Vec<PathBuf>) -> Result<(Vec<PathBuf>, Vec<PathB
 }
 
 /// If dirs is non-empty, return an error
-fn reject_directories(dirs: &Vec<PathBuf>) -> Vec<ReportItem> {
+fn reject_directories(dirs: &[PathBuf]) -> Vec<ReportItem> {
     dirs.iter()
         .map(|d| ReportItem::FileIsDirectory { path: d.clone() })
         .collect()
@@ -143,7 +142,7 @@ fn list(database: &SystemDatabase, verbose: bool) -> Result<Vec<ReportItem>, Fim
         println!("Files tracked:\n");
     }
 
-    for (path, fingerprint) in database.list_fingerprint_assertions()? {
+    for (path, _fingerprint) in database.list_fingerprint_assertions()? {
         println!("{}", path.display());
     }
 

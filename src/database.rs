@@ -209,13 +209,12 @@ impl SystemDatabase {
         let tree = self.db.open_tree("fingerprints")?;
         let mut fingerprints = vec![];
 
-        for item in tree.into_iter() {
-            if let Ok((k, v)) = item {
-                let path = path_from_key(k).unwrap();
-                let record = FingerprintRecord::from_slice(&v)?;
-                if let FingerprintRecord::Assert(_t, fingerprint) = record {
-                    fingerprints.push((path, fingerprint));
-                }
+        for item in tree.into_iter().flatten() {
+            let (k, v) = item;
+            let path = path_from_key(k).unwrap();
+            let record = FingerprintRecord::from_slice(&v)?;
+            if let FingerprintRecord::Assert(_t, fingerprint) = record {
+                fingerprints.push((path, fingerprint));
             }
         }
 

@@ -8,6 +8,7 @@ use thiserror::Error;
 /// unexpected conditions discovered during file verification or
 /// database checking.
 #[derive(Error, Debug)]
+#[allow(clippy::enum_variant_names)]
 pub enum FimblError {
     #[error("database access error")]
     DatabaseError(#[from] sled::Error),

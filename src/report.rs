@@ -5,6 +5,7 @@ use std::path::PathBuf;
 
 /// A report item that may represent unexpected file system
 /// modification or other concerning situation.
+#[allow(clippy::enum_variant_names)]
 pub enum ReportItem {
     /// The file exists (unexpectedly) and is not tolerated
     FileAlreadyTracked { path: PathBuf },
