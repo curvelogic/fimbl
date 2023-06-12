@@ -28,7 +28,7 @@ jobs:
     name: Test Suite
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
@@ -79,3 +79,39 @@ jobs:
         with:
           command: clippy
           args: -- -D warnings
+
+  release-candidate-macos:
+    needs: [check, test, fmt, clippy]
+    name: Release MacOS
+    runs-on: macos-latest
+    if: github.ref == 'refs/heads/master'
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/cache@v1
+        with:
+          path: ~/.cargo
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.toml') }}-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.toml') }}
+            ${{ runner.os }}-cargo
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+      - uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --release
+      - uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --all --release
+      - run: |
+          strip target/release/fimbl
+          mv target/release/fimbl target/release/fimbl_darwin
+      - name: Upload binary
+        uses: actions/upload-artifact@v1
+        with:
+          name: fimbl_darwin
+          path: target/release/fimbl_darwin
