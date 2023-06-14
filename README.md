@@ -14,17 +14,17 @@ On windows, try the source, good luck.
 
 ## Usage
 
-Add files to the database (_manually_) with:
+Add files to the database (_manually_) with, for example:
 
 ```shell
-fimbl add ~/.zshrc ~/.profile
+fimbl add ~/.zshrc ~/.profile ~/.config/foo
 ```
 
 ...and have them checked (somewhere in _automation_)
 with `fimbl verify` e.g.
 
 ```shell
-fimbl verify ~/.zshrc ~/.profile
+fimbl verify ~/.zshrc ~/.profile ~/.config/foo
 if [ $? -ne 0 ] ; then
   # notify, panic, stamp and shout, whatever...
 fi
