@@ -4,6 +4,11 @@ A very simple command line based file integrity checker for the
 paranoid. `fimbl` just checks that files have not changed since it
 last saw them.
 
+Installation on MacOS: `brew install curvelogic/tap/fimbl`
+On linux, build from source or try the release binary.
+On windows, try the source, good luck.
+
+
 Add files to the database (_manually_) with:
 
 ```shell
