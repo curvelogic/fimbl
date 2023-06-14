@@ -9,6 +9,10 @@ on:
         description: 'Reason for build'
         required: false
 
+env:
+  MAJOR_VERSION: 0
+  MINOR_VERSION: 1
+
 jobs:
   check:
     name: Check
@@ -42,6 +46,8 @@ jobs:
           profile: minimal
           toolchain: stable
           override: true
+          targets:
+            - aarch64-apple-darwin
       - run: cargo test
 
   fmt:
@@ -97,5 +103,35 @@ jobs:
       - name: Upload binary
         uses: actions/upload-artifact@v1
         with:
-          name: fimbl_darwin
+          name: fimbl-${{ runner.os }}-${{ env.MAJOR_VERSION}}.${{ env.MINOR_VERSION }}.${{ github.run_number }}
           path: target/release/fimbl_darwin
+
+
+  prepare-release:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    needs:
+      - release-candidate-macos
+    steps:
+
+      - uses: actions/download-artifact@v2
+        with:
+          name: eu_darwin
+
+      - name: Prepare release packages
+        run: |
+          mkdir eucalypt-x86_64-osx
+          cp eu_darwin eucalypt-x86_64-osx/eu
+          tar -cvzf eucalypt-x86_64-osx.tgz eucalypt-x86_64-osx
+
+      - name: Create release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ env.MAJOR_VERSION}}.${{ env.MINOR_VERSION }}.${{ github.run_number }}
+          draft: true
+          prerelease: false
+          body_path: CHANGELOG.md
+          files: |
+            eucalypt-x86_64-osx.tgz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
