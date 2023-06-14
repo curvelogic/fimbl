@@ -35,9 +35,6 @@ jobs:
             target: x86_64-unknown-linux-gnu
           - os: macos-latest
             target: x86_64-apple-darwin
-          - os: macos-latest
-            target: aarch64-apple-darwin
-
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
@@ -110,6 +107,8 @@ jobs:
           toolchain: stable
           override: true
           targets: ${{ matrix.target }}
+      - run: cargo install cargo-edit
+      - run: cargo set-version ${{ env.MAJOR_VERSION}}.${{ env.MINOR_VERSION }}.${{ github.run_number }}
       - run: cargo build --all --release --target ${{ matrix.target }}
       - run: |
           strip target/${{ matrix.target }}/release/fimbl
