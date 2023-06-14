@@ -113,7 +113,6 @@ jobs:
       - run: cargo build --all --release --target ${{ matrix.target }}
       - run: |
           strip target/${{ matrix.target }}/release/fimbl
-          mv target/${{ matrix.target }}/release/fimbl
       - name: Upload binary
         uses: actions/upload-artifact@v1
         with:
