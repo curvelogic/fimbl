@@ -31,6 +31,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
+        target: []
         include:
           - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
@@ -55,7 +56,7 @@ jobs:
           toolchain: stable
           override: true
           targets: ${{ runner.target }}
-      - run: cargo test
+      - run: cargo test  --target ${{ runner.target }}
 
   fmt:
     name: Rustfmt
@@ -88,6 +89,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
+        target: []
         include:
           - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
@@ -112,12 +114,12 @@ jobs:
           toolchain: stable
           override: true
           targets: ${{ runner.target }}
-      - run: cargo build --all --release
+      - run: cargo build --all --release --target ${{ runner.target }}
       - run: |
-          strip target/release/fimbl
-          mv target/release/fimbl target/release/fimbl_darwin
+          strip target/${{ runner.target }}/release/fimbl
+          mv target/${{ runner.target }}/release/fimbl
       - name: Upload binary
         uses: actions/upload-artifact@v1
         with:
           name: fimbl-${{ runner.target }}-${{ env.MAJOR_VERSION}}.${{ env.MINOR_VERSION }}.${{ github.run_number }}
-          path: target/release/fimbl_darwin
+          path: target/${{ runner.target }}/release/fimbl
