@@ -29,7 +29,6 @@ if [ $? -ne 0 ] ; then
   # notify, panic, stamp and shout, whatever...
 fi
 ```
-
 ...or use `fimbl verify-all` to verify everything in the database but
 it's probably better to be explicit. The point of this is to alert you
 to the unexpected after all.
@@ -39,6 +38,10 @@ If files have changed legitimately, accept them with:
 ```shell
 fimbl accept ~/.zshrc
 ```
+
+`fimbl list` shows you all files currently tracked.
+
+Simple as that.
 
 Currently uses SHA3_256 content hashes and records some file
 attributes too. The database is
